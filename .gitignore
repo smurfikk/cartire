@@ -1,0 +1,14 @@
+.idea
+*.sqlite3
+.DS_store
+venv/
+__pycache__/
+media/
+*/migrations
+.log
+static/debug_toolbar
+static/django_extensions
+test.py
+.env
+*.log
+node_modules/
