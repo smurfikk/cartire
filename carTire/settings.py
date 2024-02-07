@@ -135,14 +135,12 @@ LOGGING = {
     }
 }
 
+STATIC_URL = '/static/'
 if DEBUG:
-    STATIC_URL = '/static/'
-
     STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, "static"),
+        os.path.join(BASE_DIR, 'static'),
     ]
 else:
-    STATIC_URL = '/static/'
     STATIC_ROOT = 'static/'
 
 if DEBUG:
@@ -151,16 +149,6 @@ if DEBUG:
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = 'media/'
-
-# if not DEBUG:
-#     REST_FRAMEWORK = {
-#         'DEFAULT_PERMISSION_CLASSES': [
-#             'rest_framework.permissions.IsAuthenticated',
-#         ],
-#         'DEFAULT_AUTHENTICATION_CLASSES': [
-#             'rest_framework.authentication.TokenAuthentication',
-#         ],
-#     }
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 

@@ -1,8 +1,7 @@
 from django.contrib.sessions.models import Session
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db.models import Model, CharField, IntegerField, TextField, ForeignKey, CASCADE, ManyToManyField, \
-    EmailField, DateTimeField, ImageField, BooleanField, PositiveIntegerField
+from django.db.models import Model, CharField, IntegerField, TextField, ForeignKey, CASCADE, EmailField, \
+    DateTimeField, ImageField, BooleanField
 
 
 class Product(Model):
@@ -45,12 +44,33 @@ class ProductImage(Model):
         verbose_name_plural = "Изображения товаров"
 
 
+class Order(Model):
+    created = DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    total_price = IntegerField(verbose_name="Общая стоимость")
+    statuses = (
+        ("created", "Создан"),
+        ("complete", "Завершен"),
+    )
+    status = CharField(max_length=50, choices=statuses, default="created", verbose_name="Статус")
+
+    def __str__(self):
+        return f"#{self.id}"
+
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
+
+
 class Individual(Model):
+    order = ForeignKey(Order, on_delete=CASCADE, verbose_name="Заказ")
     surname = CharField(max_length=100, verbose_name="Фамилия")
     name = CharField(max_length=100, verbose_name="Имя")
     patronymic = CharField(max_length=100, verbose_name="Отчество")
     email = EmailField(verbose_name="Email")
     phone = CharField(max_length=20, verbose_name="Телефон")
+
+    def __str__(self):
+        return f"{self.surname} {self.name} {self.patronymic}"
 
     class Meta:
         verbose_name = "Физическое лицо"
@@ -58,6 +78,7 @@ class Individual(Model):
 
 
 class LegalEntity(Model):
+    order = ForeignKey(Order, on_delete=CASCADE, verbose_name="Заказ")
     surname = CharField(max_length=100, verbose_name="Фамилия")
     name = CharField(max_length=100, verbose_name="Имя")
     patronymic = CharField(max_length=100, verbose_name="Отчество")
@@ -67,12 +88,16 @@ class LegalEntity(Model):
     legal_address = CharField(max_length=255, verbose_name="Юридический адрес")
     organization_name = CharField(max_length=255, verbose_name="Наименование организации")
 
+    def __str__(self):
+        return f"{self.surname} {self.name} {self.patronymic}"
+
     class Meta:
         verbose_name = "Юридическое лицо"
         verbose_name_plural = "Юридические лица"
 
 
 class Address(Model):
+    order = ForeignKey(Order, on_delete=CASCADE, verbose_name="Заказ")
     city = CharField(max_length=100, verbose_name="Город")
     street = CharField(max_length=100, verbose_name="Улица")
     house_number = CharField(max_length=20, verbose_name="Номер дома")
@@ -80,35 +105,23 @@ class Address(Model):
     entrance = CharField(max_length=10, verbose_name="Подъезд")
     floor = CharField(max_length=10, verbose_name="Этаж")
     intercom = CharField(max_length=20, verbose_name="Домофон")
-    delivery_comments = TextField(max_length=1000, blank=True, verbose_name="Комментарий курьеру")
+    delivery_comments = TextField(max_length=1000, blank=True, null=True, verbose_name="Комментарий курьеру")
+
+    def __str__(self):
+        return f"{self.city}, {self.street}, дом {self.house_number}, кв {self.apartment_or_office}"
 
     class Meta:
         verbose_name = "Адрес"
         verbose_name_plural = "Адреса"
 
 
-class Order(Model):
-    content_type = ForeignKey(ContentType, on_delete=CASCADE, verbose_name="Контактная информация")
-    object_id = PositiveIntegerField()
-    contact_info = GenericForeignKey("content_type", "object_id")
-    delivery_address = ForeignKey(Address, on_delete=CASCADE, verbose_name="Адрес доставки")
-    created = DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    total_price = IntegerField(verbose_name="Общая стоимость")
-    statuses = (
-        ("created", "Создан"),
-        ("complete", "Завершен"),
-    )
-    status = CharField(max_length=50, choices=statuses, default="created", verbose_name="Статус")
-
-    class Meta:
-        verbose_name = "Заказ"
-        verbose_name_plural = "Заказы"
-
-
 class OrderItem(Model):
     order = ForeignKey(Order, on_delete=CASCADE, verbose_name="Заказ")
     product = ForeignKey(Product, on_delete=CASCADE, verbose_name="Товар")
     quantity = IntegerField(verbose_name="Количество")
+
+    def __str__(self):
+        return f"{self.product.name} - {self.quantity} шт."
 
     class Meta:
         verbose_name = "Товар в заказе"

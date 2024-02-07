@@ -95,15 +95,6 @@ def product_detail(request: WSGIRequest, product_id: int):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-# @api_view(["GET"])
-# @ensure_csrf_cookie
-# def get_csrf_token(request):
-#     """
-#     Возвращает CSRF токен.
-#     """
-#     return Response({"detail": "CSRF cookie set"})
-
-
 @swagger_auto_schema(
     method="post",
     operation_description="Создание заказа на основе товаров в корзине пользователя",
@@ -127,37 +118,36 @@ def create_order(request):
     contact_data = request.data.get("contact_info")
     address_data = request.data.get("address")
     contact_type = contact_data.get("type")
+    if contact_type not in ["individual", "legal_entity"]:
+        return Response({"error": "Неверный тип контакта"}, status=400)
 
     with transaction.atomic():
-        # Обработка информации о контакте
-        if contact_type == "individual":
-            contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type])
-        elif contact_type == "legal_entity":
-            contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type])
-        else:
-            return Response({"error": "Неверный тип контакта"}, status=400)
-
-        # Обработка информации об адресе
-        address, _ = Address.objects.get_or_create(**address_data)
 
         # Создание заказа
         cart_items = CartItem.objects.filter(session_id=session_id)
         total_price = sum(item.product.price * item.quantity for item in cart_items)
         order = Order.objects.create(
-            content_type=ContentType.objects.get_for_model(type(contact_info)),
-            object_id=contact_info.id,
-            delivery_address=address,
             total_price=total_price
         )
+
+        # Обработка информации об адресе
+        address, _ = Address.objects.get_or_create(**address_data, order=order)
+
+        # Обработка информации о контакте
+        if contact_type == "individual":
+            contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type], order=order)
+        elif contact_type == "legal_entity":
+            contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type], order=order)
 
         # Добавление товаров в заказ и очистка корзины
         OrderItem.objects.bulk_create([
             OrderItem(order=order, product=item.product, quantity=item.quantity) for item in cart_items
         ])
+
         text = [f"<b>Заказ №{order.id}</b>\n"
-                f"<b>Клиент:</b> {contact_info.surname} {contact_info.name} {contact_info.patronymic}\n"
+                f"<b>Клиент:</b> {contact_info}\n"
                 f"<b>Телефон:</b> {contact_info.phone}\n"
-                f"<b>Адрес:</b> {address.city}, {address.street}, {address.house_number}, {address.apartment_or_office}\n"
+                f"<b>Адрес:</b> {address}\n"
                 f"<b>Сумма заказа:</b> {total_price}₽\n\n"
                 f"<b>Товары:</b>"]
         for item in cart_items:
@@ -182,8 +172,7 @@ def session_manage(request: WSGIRequest):
     # Получаем или создаем сессию в базе данных
     session, created = Session.objects.get_or_create(session_key=session_key)
 
-    # Вы можете добавить логику для управления содержимым корзины на основе сессии
-    # Например, подсчет количества товаров в корзине
+    # Подсчет количества товаров в корзине
     cart_items_count = CartItem.objects.filter(session=session).count()
 
     return Response({
@@ -312,6 +301,7 @@ def send_telegram_message(message: str):
     data = {
         "chat_id": settings.logs_chat_id,
         "text": message,
+        "parse_mode": "html",
     }
     response = requests.post(url, data=data)
     return response.json()
