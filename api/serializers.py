@@ -14,6 +14,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
+    popularity = serializers.IntegerField(default=0, read_only=True)
 
     class Meta:
         model = Product
@@ -21,7 +22,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "id", "name", "manufacturers_code", "season", "width",
             "load_index", "profile", "speed_index", "diameter",
             "homologation", "tire_model", "product_code", "manufacturer",
-            "item_with_the_hint", "description", "price", "images"
+            "item_with_the_hint", "description", "price", "images", "popularity"
         ]
 
 

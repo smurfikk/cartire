@@ -130,7 +130,6 @@ def create_order(request):
 
     with transaction.atomic():
         # Обработка информации о контакте
-        print(f"{contact_data[contact_type]=}")  # {'surname': 'string', 'name': 'string', 'patronymic': 'string', 'email': 'user@example.com', 'phone': 'string'}
         if contact_type == "individual":
             contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type])
         elif contact_type == "legal_entity":
