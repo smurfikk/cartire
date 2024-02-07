@@ -177,8 +177,3 @@ logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
-
-if DEBUG:
-    INTERNAL_IPS = ["127.0.0.1"]
-    MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
-    INSTALLED_APPS.append('debug_toolbar')

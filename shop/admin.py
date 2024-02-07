@@ -7,11 +7,16 @@ class InlineProductImage(admin.TabularInline):
     model = ProductImage
 
 
+class InlineAddress(admin.TabularInline):
+    model = Address
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [InlineProductImage]
 
 
-@admin.register(CartItem)
-class CartItemAdmin(admin.ModelAdmin):
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
     pass
+    # inlines = [InlineAddress]

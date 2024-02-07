@@ -8,4 +8,4 @@ urlpatterns = [
     path("", views.index, name="index"),
 ]
 
-handler404 = "shop.views.redirect_to_index"
+handler404 = "shop.views.index"

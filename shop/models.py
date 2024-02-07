@@ -92,7 +92,7 @@ class Order(Model):
     object_id = PositiveIntegerField()
     contact_info = GenericForeignKey("content_type", "object_id")
     delivery_address = ForeignKey(Address, on_delete=CASCADE, verbose_name="Адрес доставки")
-    created = DateTimeField(auto_created=True, verbose_name="Дата создания")
+    created = DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     total_price = IntegerField(verbose_name="Общая стоимость")
     statuses = (
         ("created", "Создан"),

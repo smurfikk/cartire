@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.core.handlers.wsgi import WSGIRequest
 
 
-def index(request: WSGIRequest):
+def index(request: WSGIRequest, exception=None):
     return render(request, "shop/index.html")
 
 

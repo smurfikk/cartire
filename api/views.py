@@ -130,15 +130,16 @@ def create_order(request):
 
     with transaction.atomic():
         # Обработка информации о контакте
+        print(f"{contact_data[contact_type]=}")  # {'surname': 'string', 'name': 'string', 'patronymic': 'string', 'email': 'user@example.com', 'phone': 'string'}
         if contact_type == "individual":
-            contact_info, _ = Individual.objects.update_or_create(defaults=contact_data, id=contact_data.get("id"))
+            contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type])
         elif contact_type == "legal_entity":
-            contact_info, _ = LegalEntity.objects.update_or_create(defaults=contact_data, id=contact_data.get("id"))
+            contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type])
         else:
             return Response({"error": "Неверный тип контакта"}, status=400)
 
         # Обработка информации об адресе
-        address, _ = Address.objects.update_or_create(defaults=address_data, id=address_data.get("id"))
+        address, _ = Address.objects.get_or_create(**address_data)
 
         # Создание заказа
         cart_items = CartItem.objects.filter(session_id=session_id)
@@ -154,14 +155,14 @@ def create_order(request):
         OrderItem.objects.bulk_create([
             OrderItem(order=order, product=item.product, quantity=item.quantity) for item in cart_items
         ])
-        text = [f"Заказ №{order.id}\n"
-                f"Клиент: {contact_info.surname} {contact_info.name} {contact_info.patronymic}\n"
-                f"Телефон: {contact_info.phone}\n"
-                f"Адрес: {address.city}, {address.street}, {address.house}, {address.apartment}\n"
-                f"Сумма заказа: {total_price}₽\n"
-                f"Товары:\n"]
+        text = [f"<b>Заказ №{order.id}</b>\n"
+                f"<b>Клиент:</b> {contact_info.surname} {contact_info.name} {contact_info.patronymic}\n"
+                f"<b>Телефон:</b> {contact_info.phone}\n"
+                f"<b>Адрес:</b> {address.city}, {address.street}, {address.house_number}, {address.apartment_or_office}\n"
+                f"<b>Сумма заказа:</b> {total_price}₽\n\n"
+                f"<b>Товары:</b>"]
         for item in cart_items:
-            text.append(f"{item.product} - {item.quantity}шт ({item.quantity * item.product.price}₽)\n")
+            text.append(f"<b>{item.product}</b> - {item.quantity}шт ({item.quantity * item.product.price}₽)")
         cart_items.delete()
 
     send_telegram_message("\n".join(text))
