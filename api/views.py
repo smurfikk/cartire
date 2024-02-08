@@ -196,7 +196,7 @@ def get_cart_items(request: Request):
     Возвращает товары в корзине.
     Параметры: {"session_id": "123abc"}
     """
-    session_id = request.data.get("session_id")
+    session_id = request.GET.get("session_id")
     if not session_id:
         return Response({"error": "Не указан ID сессии"}, status=400)
 
