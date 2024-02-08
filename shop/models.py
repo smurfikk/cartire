@@ -65,7 +65,7 @@ class Individual(Model):
     order = ForeignKey(Order, on_delete=CASCADE, verbose_name="Заказ")
     surname = CharField(max_length=100, verbose_name="Фамилия")
     name = CharField(max_length=100, verbose_name="Имя")
-    patronymic = CharField(max_length=100, verbose_name="Отчество")
+    patronymic = CharField(max_length=100, blank=True, null=True, verbose_name="Отчество")
     email = EmailField(verbose_name="Email")
     phone = CharField(max_length=20, verbose_name="Телефон")
 
@@ -81,7 +81,7 @@ class LegalEntity(Model):
     order = ForeignKey(Order, on_delete=CASCADE, verbose_name="Заказ")
     surname = CharField(max_length=100, verbose_name="Фамилия")
     name = CharField(max_length=100, verbose_name="Имя")
-    patronymic = CharField(max_length=100, verbose_name="Отчество")
+    patronymic = CharField(max_length=100, blank=True, null=True, verbose_name="Отчество")
     email = EmailField(verbose_name="Email")
     phone = CharField(max_length=20, verbose_name="Телефон")
     registration_number = CharField(max_length=100, verbose_name="ЕГРПОУ")
