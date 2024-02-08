@@ -1,11 +1,10 @@
 import requests
 from django.db import transaction
 from django.db.models import Count
-from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
@@ -24,7 +23,7 @@ from shop.models import Product, Order, OrderItem, CartItem, Individual, LegalEn
     )}
 )
 @api_view(["GET"])
-def combined_filters(request):
+def combined_filters(request: Request):
     """
     Возвращает возможные значения фильтров для товаров.
     """
@@ -40,7 +39,7 @@ def combined_filters(request):
 
 
 @api_view(["GET"])
-def product_list(request: WSGIRequest):
+def product_list(request: Request):
     """
     Возвращает список товаров, имеет возможность фильтрации.
     Возможные параметры фильтрации: width, profile, diameter, season, manufacturer
@@ -83,7 +82,7 @@ def product_list(request: WSGIRequest):
     )}
 )
 @api_view(["GET"])
-def product_detail(request: WSGIRequest, product_id: int):
+def product_detail(request: Request, product_id: int):
     """
     Возвращает информацию о товаре по его ID.
     """
@@ -108,11 +107,11 @@ def product_detail(request: WSGIRequest, product_id: int):
 @csrf_exempt
 @api_view(["POST"])
 @ensure_csrf_cookie
-def create_order(request):
+def create_order(request: Request):
     """
     Создание заказа.
     """
-    session_id = request.session.session_key
+    session_id = request.data.get("session_id")
     if not session_id or not CartItem.objects.filter(session_id=session_id).exists():
         return Response({"error": "Корзина пуста"}, status=404)
 
@@ -160,7 +159,7 @@ def create_order(request):
 
 
 @api_view(["GET"])
-def session_manage(request: WSGIRequest):
+def session_manage(request: Request):
     """
     Возвращает информацию о сессии.
     """
@@ -192,14 +191,12 @@ def session_manage(request: WSGIRequest):
     )}
 )
 @api_view(["GET"])
-def get_cart_items(request):
+def get_cart_items(request: Request):
     """
     Возвращает товары в корзине.
+    Параметры: {"session_id": "123abc"}
     """
-    session_id = request.session.session_key
-    if not session_id:
-        request.session.save()
-        session_id = request.session.session_key
+    session_id = request.data.get("session_id")
 
     items = CartItem.objects.filter(session_id=session_id)
     total_price = sum(item.product.price * item.quantity for item in items)
@@ -235,19 +232,18 @@ def get_cart_items(request):
 )
 @csrf_exempt
 @api_view(["POST"])
-@ensure_csrf_cookie
-def add_to_cart(request):
+# @ensure_csrf_cookie
+def add_to_cart(request: Request):
     """
     Добавление товара в корзину
-    Пример: {"product_id": 1, "quantity":2}
+    Пример: {"session_id": "123abc", "product_id": 1, "quantity":2}
     """
-    session_id = request.session.session_key
+    session_id = request.data.get("session_id")
     if not session_id:
-        request.session.save()
-        session_id = request.session.session_key
+        return Response({"error": "Сессия не найдена"}, status=404)
 
-    product_id = request.data.get("product_id")
-    quantity = request.data.get("quantity", 1)
+    product_id = int(request.data.get("product_id"))
+    quantity = int(request.data.get("quantity", 1))
 
     try:
         product = Product.objects.get(id=product_id)
@@ -266,15 +262,14 @@ def add_to_cart(request):
 
 @csrf_exempt
 @api_view(["POST"])
-@ensure_csrf_cookie
-def remove_from_cart(request):
+def remove_from_cart(request: Request):
     """
     Удаление товара из корзины.
     Если 'all' установлен в true, удаляет все экземпляры товара. В противном случае удаляет один экземпляр.
-    Пример: {"product_id": 1, "all": false} - удалит 1 товар.
-    Пример: {"product_id": 1, "all": true} - удалит все единицы товара.
+    Пример: {"session_id": "123abc", "product_id": 1, "all": false} - удалит 1 товар.
+    Пример: {"session_id": "123abc", "product_id": 1, "all": true} - удалит все единицы товара.
     """
-    session_id = request.session.session_key
+    session_id = request.data.get("session_id")
     if not session_id:
         return Response({"error": "Корзина не найдена"}, status=404)
 
@@ -297,15 +292,6 @@ def remove_from_cart(request):
         return Response({"detail": "Товар(ы) удален(ы) из корзины"})
     except CartItem.DoesNotExist:
         return Response({"error": "Товар в корзине не найден"}, status=404)
-
-
-@api_view(["GET"])
-@ensure_csrf_cookie
-def get_csrf_token(request):
-    """
-    Возвращает CSRF токен.
-    """
-    return Response({"detail": "CSRF cookie set"})
 
 
 def send_telegram_message(message: str):

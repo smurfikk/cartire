@@ -57,7 +57,8 @@ create_order_properties = {
         type=openapi.TYPE_OBJECT,
         description="Информация о клиенте",
         properties={
-            'type': openapi.Schema(type=openapi.TYPE_STRING,
+            'session_id': openapi.Schema(type=openapi.TYPE_STRING, default="123abc", description="session_id"),
+            'type': openapi.Schema(type=openapi.TYPE_STRING, default="individual",
                                    description="Тип клиента: individual или legal_entity"),
             'individual': openapi.Schema(type=openapi.TYPE_OBJECT, properties=individual_properties),
             'legal_entity': openapi.Schema(type=openapi.TYPE_OBJECT, properties=legal_entity_properties),
