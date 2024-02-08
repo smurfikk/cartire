@@ -3,7 +3,7 @@ from django.db import transaction
 from django.db.models import Count
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.sessions.models import Session
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
 from rest_framework.response import Response
@@ -294,6 +294,15 @@ def remove_from_cart(request):
         return Response({"detail": "Товар(ы) удален(ы) из корзины"})
     except CartItem.DoesNotExist:
         return Response({"error": "Товар в корзине не найден"}, status=404)
+
+
+@api_view(["GET"])
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    """
+    Возвращает CSRF токен.
+    """
+    return Response({"detail": "CSRF cookie set"})
 
 
 def send_telegram_message(message: str):
