@@ -104,7 +104,6 @@ def product_detail(request: Request, product_id: int):
     ),
     responses=create_order_responses,
 )
-@csrf_exempt
 @api_view(["POST"])
 @ensure_csrf_cookie
 def create_order(request: Request):
@@ -232,7 +231,6 @@ def get_cart_items(request: Request):
         404: openapi.Response(description="Продукт не найден")
     }
 )
-@csrf_exempt
 @api_view(["POST"])
 def add_to_cart(request: Request):
     """
@@ -261,7 +259,6 @@ def add_to_cart(request: Request):
     return Response({"detail": "Товар добавлен в корзину"})
 
 
-@csrf_exempt
 @api_view(["POST"])
 def remove_from_cart(request: Request):
     """
