@@ -15,6 +15,7 @@ from .serializers import *
 from .swagger_data import *
 from carTire import settings
 from shop.models import Product, Order, OrderItem, CartItem, Individual, LegalEntity, Address
+from .data import cities_list
 
 
 @swagger_auto_schema(
@@ -233,7 +234,6 @@ def get_cart_items(request: Request):
 )
 @csrf_exempt
 @api_view(["POST"])
-# @ensure_csrf_cookie
 def add_to_cart(request: Request):
     """
     Добавление товара в корзину
@@ -293,6 +293,14 @@ def remove_from_cart(request: Request):
         return Response({"detail": "Товар(ы) удален(ы) из корзины"})
     except CartItem.DoesNotExist:
         return Response({"error": "Товар в корзине не найден"}, status=404)
+
+
+@api_view(["GET"])
+def get_cities(request: Request):
+    """
+    Возвращает список городов.
+    """
+    return Response({"cities": cities_list})
 
 
 def send_telegram_message(message: str):
