@@ -1,3 +1,5 @@
+import hashlib
+
 import requests
 from django.db import transaction
 from django.db.models import Count
@@ -28,13 +30,10 @@ def combined_filters(request: Request):
     Возвращает возможные значения фильтров для товаров.
     """
     products = Product.objects.all()
-    filters = {
-        "width": list(products.values_list("width", flat=True).distinct()),
-        "profile": list(products.values_list("profile", flat=True).distinct()),
-        "diameter": list(products.values_list("diameter", flat=True).distinct()),
-        "season": list(products.values_list("season", flat=True).distinct()),
-        "manufacturer": list(products.values_list("manufacturer", flat=True).distinct()),
-    }
+    filters = {}
+    for name in ["width", "profile", "diameter", "season", "manufacturer"]:
+        values = products.values_list(name, flat=True).distinct()
+        filters[name] = [{"id": hashlib.md5(f"{value}".encode()).hexdigest(), "label": value} for value in values]
     return Response(filters)
 
 
