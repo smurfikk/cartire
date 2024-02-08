@@ -107,6 +107,7 @@ def product_detail(request: WSGIRequest, product_id: int):
 )
 @csrf_exempt
 @api_view(["POST"])
+@ensure_csrf_cookie
 def create_order(request):
     """
     Создание заказа.
@@ -234,6 +235,7 @@ def get_cart_items(request):
 )
 @csrf_exempt
 @api_view(["POST"])
+@ensure_csrf_cookie
 def add_to_cart(request):
     """
     Добавление товара в корзину
@@ -264,6 +266,7 @@ def add_to_cart(request):
 
 @csrf_exempt
 @api_view(["POST"])
+@ensure_csrf_cookie
 def remove_from_cart(request):
     """
     Удаление товара из корзины.
