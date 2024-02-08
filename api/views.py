@@ -197,6 +197,8 @@ def get_cart_items(request: Request):
     Параметры: {"session_id": "123abc"}
     """
     session_id = request.data.get("session_id")
+    if not session_id:
+        return Response({"error": "Не указан ID сессии"}, status=400)
 
     items = CartItem.objects.filter(session_id=session_id)
     total_price = sum(item.product.price * item.quantity for item in items)
