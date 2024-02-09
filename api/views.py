@@ -313,7 +313,7 @@ def callback_order(request: Request):
                           f"<b>Имя:</b> {name}\n"
                           f"<b>Телефон:</b> {phone}\n"
                           f"<b>Вопрос:</b> {question}")
-    return Response({"cities": cities_list})
+    return Response({"detail": "Заявка отправлена"})
 
 
 def send_telegram_message(message: str):
