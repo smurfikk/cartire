@@ -24,6 +24,7 @@ urlpatterns = [
     path("cart/add/", views.add_to_cart, name="add_to_cart"),
     path("cart/remove/", views.remove_from_cart, name="remove_from_cart"),
     path("cities/", views.get_cities, name="get_cities"),
+    path("callback-order/", views.callback_order, name="callback_order"),
     path("swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
 ]

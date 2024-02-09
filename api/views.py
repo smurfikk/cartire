@@ -300,6 +300,22 @@ def get_cities(request: Request):
     return Response({"cities": cities_list})
 
 
+@api_view(["POST"])
+def callback_order(request: Request):
+    """
+    Заявка на обратный звонок.
+    Пример: {"name": "Иван", "phone": "1234567890", "question": "Какой-то вопрос"}
+    """
+    name = request.data.get("name").replace("<", "&lt;")
+    phone = request.data.get("phone")
+    question = request.data.get("question").replace("<", "&lt;")
+    send_telegram_message(f"<b>Заявка на обратный звонок</b>\n"
+                          f"<b>Имя:</b> {name}\n"
+                          f"<b>Телефон:</b> {phone}\n"
+                          f"<b>Вопрос:</b> {question}")
+    return Response({"cities": cities_list})
+
+
 def send_telegram_message(message: str):
     url = f"https://api.telegram.org/bot{settings.logs_bot_token}/sendMessage"
     data = {
