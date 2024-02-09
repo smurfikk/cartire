@@ -63,8 +63,3 @@ class OrderAdmin(admin.ModelAdmin):
                 if inline.model == LegalEntity and not LegalEntity.objects.filter(order=obj).exists():
                     continue
             yield inline.get_formset(request, obj), inline
-
-
-@admin.register(CartItem)
-class OrderAdmin(admin.ModelAdmin):
-    pass
