@@ -1,0 +1,13 @@
+SECRET_KEY=django-insecure-abcdabcdabcdabcdabcda&^a^abcdabcdabcdabcdabcdabcda
+DEBUG=1
+ALLOWED_HOSTS=*
+
+MYSQL_DB=car_tire
+MYSQL_USER=root
+MYSQL_PASSWORD=root
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+DATABASE=mysql
+
+logs_bot_token=1234567890:AAaa012AAaa012AAaa012AAaa012AAaa012
+logs_chat_id=123456789
