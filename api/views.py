@@ -112,7 +112,7 @@ def product_detail(request: Request, product_id: int):
     responses=create_order_responses,
 )
 @api_view(["POST"])
-@ensure_csrf_cookie
+@csrf_exempt
 def create_order(request: Request):
     """
     Создание заказа.
@@ -239,6 +239,7 @@ def get_cart_items(request: Request):
     }
 )
 @api_view(["POST"])
+@csrf_exempt
 def add_to_cart(request: Request):
     """
     Добавление товара в корзину
@@ -267,6 +268,7 @@ def add_to_cart(request: Request):
 
 
 @api_view(["POST"])
+@csrf_exempt
 def remove_from_cart(request: Request):
     """
     Удаление товара из корзины.
@@ -308,6 +310,7 @@ def get_cities(request: Request):
 
 
 @api_view(["POST"])
+@csrf_exempt
 def callback_order(request: Request):
     """
     Заявка на обратный звонок.
