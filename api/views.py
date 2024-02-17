@@ -1,6 +1,7 @@
 import hashlib
 
 import requests
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count
 from django.contrib.sessions.models import Session
@@ -44,9 +45,13 @@ def product_list(request: Request):
     Возвращает список товаров, имеет возможность фильтрации.
     Возможные параметры фильтрации: width, profile, diameter, season, manufacturer
     По умолчанию сортировка по популярности.
+    Параметр page - номер страницы (по умолчанию 1).
     """
     products = Product.objects.filter(visible=True)  # Фильтрация видимых товаров
 
+    page = request.GET.get("page")
+    if not page:
+        page = 1
     # Фильтрация по параметрам
     width = request.GET.get("width")
     profile = request.GET.get("profile")
@@ -67,6 +72,8 @@ def product_list(request: Request):
 
     products = products.annotate(popularity=Count("orderitem")).order_by("-popularity")
 
+    paginator = Paginator(products, 20)
+    products = paginator.get_page(page)
     # Сериализация данных
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
