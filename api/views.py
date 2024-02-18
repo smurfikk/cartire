@@ -50,9 +50,7 @@ def product_list(request: Request):
     """
     products = Product.objects.filter(visible=True)  # Фильтрация видимых товаров
 
-    page = request.GET.get("page")
-    if not page:
-        page = 1
+    page = int(request.GET.get("page", 1))
     # Фильтрация по параметрам
     width = [int(w) for w in request.GET.get("width", "").split(",") if w.isdigit()]
     profile = [int(p) for p in request.GET.get("profile", "").split(",") if p.isdigit()]
@@ -80,6 +78,8 @@ def product_list(request: Request):
 
     paginator = Paginator(products, 20)
     products = paginator.get_page(page)
+    if paginator.num_pages < page:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     # Сериализация данных
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
