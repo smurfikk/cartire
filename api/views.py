@@ -54,11 +54,12 @@ def product_list(request: Request):
     if not page:
         page = 1
     # Фильтрация по параметрам
-    width: list[str] = request.GET.get("width", "").split(",")
-    profile: list[str] = request.GET.get("profile", "").split(",")
-    diameter: list[str] = request.GET.get("diameter", "").split(",")
-    season: list[str] = request.GET.get("season", "").split(",")
-    manufacturer: list[str] = request.GET.get("manufacturer", "").split(",")
+    width = [int(w) for w in request.GET.get("width", "").split(",") if w.isdigit()]
+    profile = [int(p) for p in request.GET.get("profile", "").split(",") if p.isdigit()]
+    diameter = [int(d) for d in request.GET.get("diameter", "").split(",") if d.isdigit()]
+    season: list[str] = [s for s in request.GET.get("season", "").split(",") if s]
+    manufacturer: list[str] = [m for m in request.GET.get("manufacturer", "").split(",") if m]
+
     sort = request.GET.get("sort")
 
     if width:
