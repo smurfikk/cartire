@@ -54,24 +54,28 @@ def product_list(request: Request):
     if not page:
         page = 1
     # Фильтрация по параметрам
-    width = request.GET.get("width")
-    profile = request.GET.get("profile")
-    diameter = request.GET.get("diameter")
-    season = request.GET.get("season")
-    manufacturer = request.GET.get("manufacturer")
+    width: list[str] = request.GET.get("width", "").split(",")
+    profile: list[str] = request.GET.get("profile", "").split(",")
+    diameter: list[str] = request.GET.get("diameter", "").split(",")
+    season: list[str] = request.GET.get("season", "").split(",")
+    manufacturer: list[str] = request.GET.get("manufacturer", "").split(",")
+    sort = request.GET.get("sort")
 
     if width:
-        products = products.filter(width=width)
+        products = products.filter(width__in=width)
     if profile:
-        products = products.filter(profile=profile)
+        products = products.filter(profile__in=profile)
     if diameter:
-        products = products.filter(diameter=diameter)
+        products = products.filter(diameter__in=diameter)
     if season:
-        products = products.filter(season=season)
+        products = products.filter(season__in=season)
     if manufacturer:
-        products = products.filter(manufacturer=manufacturer)
+        products = products.filter(manufacturer__in=manufacturer)
 
-    products = products.annotate(popularity=Count("orderitem")).order_by("-popularity")
+    if sort == "price":
+        products = products.order_by("price")
+    else:
+        products = products.annotate(popularity=Count("orderitem")).order_by("-popularity")
 
     paginator = Paginator(products, 20)
     products = paginator.get_page(page)
