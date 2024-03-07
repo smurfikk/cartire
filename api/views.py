@@ -6,9 +6,10 @@ from django.db import transaction
 from django.db.models import Count
 from django.contrib.sessions.models import Session
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import *
@@ -116,7 +117,7 @@ def product_detail(request: Request, product_id: int):
     responses=create_order_responses,
 )
 @api_view(["POST"])
-# @permission_classes([AllowAny])
+@permission_classes([AllowAny])
 def create_order(request: Request):
     """
     Создание заказа.
@@ -243,7 +244,7 @@ def get_cart_items(request: Request):
     }
 )
 @api_view(["POST"])
-# @permission_classes([AllowAny])
+@permission_classes([AllowAny])
 def add_to_cart(request: Request):
     """
     Добавление товара в корзину
@@ -272,7 +273,7 @@ def add_to_cart(request: Request):
 
 
 @api_view(["POST"])
-# @permission_classes([AllowAny])
+@permission_classes([AllowAny])
 def remove_from_cart(request: Request):
     """
     Удаление товара из корзины.
@@ -314,7 +315,7 @@ def get_cities(request: Request):
 
 
 @api_view(["POST"])
-# @permission_classes([AllowAny])
+@permission_classes([AllowAny])
 def callback_order(request: Request):
     """
     Заявка на обратный звонок.
