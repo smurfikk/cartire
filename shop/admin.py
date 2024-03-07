@@ -51,15 +51,15 @@ class OrderAdmin(admin.ModelAdmin):
     fields = ["id", "created", "total_price", "status"]
     readonly_fields = fields[:-1]
     list_filter = ["status"]
-    inlines = [InlineAddress, InlineIndividual, InlineLegalEntity, InlineOrderItem]
+    inlines = [InlineAddress, InlineIndividual, InlineOrderItem]
 
-    def get_formsets_with_inlines(self, request, obj=None):
-        """Динамически отображаем инлайны в зависимости от наличия связанной записи."""
-        for inline in self.get_inline_instances(request, obj):
-            # Пропускаем отображение инлайна, если нет связанных объектов
-            if obj:  # Проверяем, что obj не None
-                if inline.model == Individual and not Individual.objects.filter(order=obj).exists():
-                    continue
-                if inline.model == LegalEntity and not LegalEntity.objects.filter(order=obj).exists():
-                    continue
-            yield inline.get_formset(request, obj), inline
+    # def get_formsets_with_inlines(self, request, obj=None):
+    #     """Динамически отображаем инлайны в зависимости от наличия связанной записи."""
+    #     for inline in self.get_inline_instances(request, obj):
+    #         # Пропускаем отображение инлайна, если нет связанных объектов
+    #         if obj:  # Проверяем, что obj не None
+    #             if inline.model == Individual and not Individual.objects.filter(order=obj).exists():
+    #                 continue
+    #             if inline.model == LegalEntity and not LegalEntity.objects.filter(order=obj).exists():
+    #                 continue
+    #         yield inline.get_formset(request, obj), inline
