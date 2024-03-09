@@ -1,4 +1,5 @@
 import hashlib
+import logging
 
 import requests
 from django.core.paginator import Paginator
@@ -122,50 +123,53 @@ def create_order(request: Request):
     """
     Создание заказа.
     """
-    session_id = request.data.get("session_id")
-    if not session_id or not CartItem.objects.filter(session_id=session_id).exists():
-        return Response({"error": "Корзина пуста"}, status=404)
+    try:
+        session_id = request.data.get("session_id")
+        if not session_id or not CartItem.objects.filter(session_id=session_id).exists():
+            return Response({"error": "Корзина пуста"}, status=404)
 
-    contact_data = request.data.get("contact_info")
-    address_data = request.data.get("address")
-    contact_type = contact_data.get("type")
-    if contact_type not in ["individual", "legal_entity"]:
-        return Response({"error": "Неверный тип контакта"}, status=400)
+        contact_data = request.data.get("contact_info")
+        address_data = request.data.get("address")
+        contact_type = contact_data.get("type")
+        if contact_type not in ["individual", "legal_entity"]:
+            return Response({"error": "Неверный тип контакта"}, status=400)
 
-    with transaction.atomic():
+        with transaction.atomic():
 
-        # Создание заказа
-        cart_items = CartItem.objects.filter(session_id=session_id)
-        total_price = sum(item.product.price * item.quantity for item in cart_items)
-        order = Order.objects.create(
-            total_price=total_price
-        )
+            # Создание заказа
+            cart_items = CartItem.objects.filter(session_id=session_id)
+            total_price = sum(item.product.price * item.quantity for item in cart_items)
+            order = Order.objects.create(
+                total_price=total_price
+            )
 
-        # Обработка информации об адресе
-        address, _ = Address.objects.get_or_create(**address_data, order=order)
+            # Обработка информации об адресе
+            address, _ = Address.objects.get_or_create(**address_data, order=order)
 
-        # Обработка информации о контакте
-        contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type], order=order)
-        # if contact_type == "individual":
-        # elif contact_type == "legal_entity":
-        #     contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type], order=order)
+            # Обработка информации о контакте
+            contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type], order=order)
+            # if contact_type == "individual":
+            # elif contact_type == "legal_entity":
+            #     contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type], order=order)
 
-        # Добавление товаров в заказ и очистка корзины
-        OrderItem.objects.bulk_create([
-            OrderItem(order=order, product=item.product, quantity=item.quantity) for item in cart_items
-        ])
+            # Добавление товаров в заказ и очистка корзины
+            OrderItem.objects.bulk_create([
+                OrderItem(order=order, product=item.product, quantity=item.quantity) for item in cart_items
+            ])
 
-        text = [f"<b>Заказ №{order.id}</b>\n"
-                f"<b>Клиент:</b> {contact_info}\n"
-                f"<b>Телефон:</b> {contact_info.phone}\n"
-                f"<b>Адрес:</b> {address}\n"
-                f"<b>Сумма заказа:</b> {total_price}₽\n\n"
-                f"<b>Товары:</b>"]
-        for item in cart_items:
-            text.append(f"<b>{item.product}</b> - {item.quantity}шт ({item.quantity * item.product.price}₽)")
-        cart_items.delete()
+            text = [f"<b>Заказ №{order.id}</b>\n"
+                    f"<b>Клиент:</b> {contact_info}\n"
+                    f"<b>Телефон:</b> {contact_info.phone}\n"
+                    f"<b>Адрес:</b> {address}\n"
+                    f"<b>Сумма заказа:</b> {total_price}₽\n\n"
+                    f"<b>Товары:</b>"]
+            for item in cart_items:
+                text.append(f"<b>{item.product}</b> - {item.quantity}шт ({item.quantity * item.product.price}₽)")
+            cart_items.delete()
 
-    send_telegram_message("\n".join(text))
+        send_telegram_message("\n".join(text))
+    except Exception as e:
+        logging.error(f"Ошибка при создании заказа: {e}")
     return Response({"success": "Заказ создан", "order_id": order.id})
 
 
