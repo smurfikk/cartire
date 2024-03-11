@@ -147,7 +147,14 @@ def create_order(request: Request):
             address, _ = Address.objects.get_or_create(**address_data, order=order)
 
             # Обработка информации о контакте
-            contact_info, _ = Individual.objects.get_or_create(**contact_data[contact_type], order=order)
+            contact_info, _ = Individual.objects.get_or_create(
+                order=order,
+                surname=contact_data["surname"],
+                name=contact_data["name"],
+                patronymic=contact_data["patronymic"],
+                email=contact_data["email"],
+                phone=contact_data["phone"],
+            )
             # if contact_type == "individual":
             # elif contact_type == "legal_entity":
             #     contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type], order=order)
