@@ -149,11 +149,11 @@ def create_order(request: Request):
             # Обработка информации о контакте
             contact_info, _ = Individual.objects.get_or_create(
                 order=order,
-                surname=contact_data["surname"],
-                name=contact_data["name"],
-                patronymic=contact_data["patronymic"],
-                email=contact_data["email"],
-                phone=contact_data["phone"],
+                surname=contact_data[contact_type]["surname"],
+                name=contact_data[contact_type]["name"],
+                patronymic=contact_data[contact_type]["patronymic"],
+                email=contact_data[contact_type]["email"],
+                phone=contact_data[contact_type]["phone"],
             )
             # if contact_type == "individual":
             # elif contact_type == "legal_entity":
@@ -177,6 +177,7 @@ def create_order(request: Request):
         send_telegram_message("\n".join(text))
     except Exception as e:
         logging.error(f"Ошибка при создании заказа: {e}")
+        return Response({"error": "Ошибка при создании заказа"}, status=500)
     return Response({"success": "Заказ создан", "order_id": order.id})
 
 
