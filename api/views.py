@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import traceback
 
 import requests
 from django.core.paginator import Paginator
@@ -175,7 +176,8 @@ def create_order(request: Request):
 
         send_telegram_message("\n".join(text))
     except Exception as e:
-        logging.error(f"Ошибка при создании заказа: {e}")
+        logging.error(f"Ошибка при создании заказа: {e}\n"
+                      f"{traceback.format_exc()}")
         return Response({"error": "Ошибка при создании заказа"}, status=500)
     return Response({"success": "Заказ создан", "order_id": order.id})
 
