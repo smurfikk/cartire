@@ -1,7 +1,7 @@
 from django.contrib.sessions.models import Session
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Model, CharField, IntegerField, TextField, ForeignKey, CASCADE, EmailField, \
-    DateTimeField, ImageField, BooleanField
+from django.db.models import Model, CharField, IntegerField, TextField, ForeignKey, CASCADE, DateTimeField, ImageField, \
+    BooleanField
 
 
 class Product(Model):
@@ -63,7 +63,6 @@ class Individual(Model):
     surname = CharField(max_length=100, verbose_name="Фамилия")
     name = CharField(max_length=100, verbose_name="Имя")
     patronymic = CharField(max_length=100, blank=True, null=True, verbose_name="Отчество")
-    email = EmailField(verbose_name="Email")
     phone = CharField(max_length=20, verbose_name="Телефон")
 
     def __str__(self):
@@ -79,7 +78,6 @@ class LegalEntity(Model):
     surname = CharField(max_length=100, verbose_name="Фамилия")
     name = CharField(max_length=100, verbose_name="Имя")
     patronymic = CharField(max_length=100, blank=True, null=True, verbose_name="Отчество")
-    email = EmailField(verbose_name="Email")
     phone = CharField(max_length=20, verbose_name="Телефон")
     registration_number = CharField(max_length=100, verbose_name="ЕГРПОУ")
     legal_address = CharField(max_length=255, verbose_name="Юридический адрес")

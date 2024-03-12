@@ -152,7 +152,6 @@ def create_order(request: Request):
                 surname=contact_data[contact_type]["surname"],
                 name=contact_data[contact_type]["name"],
                 patronymic=contact_data[contact_type]["patronymic"],
-                email=contact_data[contact_type]["email"],
                 phone=contact_data[contact_type]["phone"],
             )
             # if contact_type == "individual":

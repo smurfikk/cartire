@@ -24,7 +24,6 @@ individual_properties = {
     'surname': openapi.Schema(type=openapi.TYPE_STRING, description="Фамилия"),
     'name': openapi.Schema(type=openapi.TYPE_STRING, description="Имя"),
     'patronymic': openapi.Schema(type=openapi.TYPE_STRING, description="Отчество"),
-    'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL, description="Email"),
     'phone': openapi.Schema(type=openapi.TYPE_STRING, description="Телефон"),
 }
 
@@ -33,7 +32,6 @@ legal_entity_properties = {
     'surname': openapi.Schema(type=openapi.TYPE_STRING, description="Фамилия"),
     'name': openapi.Schema(type=openapi.TYPE_STRING, description="Имя"),
     'patronymic': openapi.Schema(type=openapi.TYPE_STRING, description="Отчество"),
-    'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL, description="Email"),
     'phone': openapi.Schema(type=openapi.TYPE_STRING, description="Телефон"),
     'registration_number': openapi.Schema(type=openapi.TYPE_STRING, description="ЕГРПОУ"),
     'legal_address': openapi.Schema(type=openapi.TYPE_STRING, description="Юридический адрес"),
