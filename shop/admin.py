@@ -29,11 +29,6 @@ class InlineIndividual(InlineOnlyView):
     verbose_name_plural = model._meta.verbose_name
 
 
-class InlineLegalEntity(InlineOnlyView):
-    model = LegalEntity
-    verbose_name_plural = model._meta.verbose_name
-
-
 class InlineOrderItem(InlineOnlyView):
     model = OrderItem
 

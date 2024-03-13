@@ -17,7 +17,7 @@ from drf_yasg.utils import swagger_auto_schema
 from .serializers import *
 from .swagger_data import *
 from carTire import settings
-from shop.models import Product, Order, OrderItem, CartItem, Individual, LegalEntity, Address
+from shop.models import Product, Order, OrderItem, CartItem, Individual, Address
 from .data import cities_list
 
 
@@ -131,9 +131,6 @@ def create_order(request: Request):
 
         contact_data = request.data.get("contact_info")
         address_data = request.data.get("address")
-        contact_type = contact_data.get("type")
-        if contact_type not in ["individual", "legal_entity"]:
-            return Response({"error": "Неверный тип контакта"}, status=400)
 
         with transaction.atomic():
 
@@ -150,14 +147,11 @@ def create_order(request: Request):
             # Обработка информации о контакте
             contact_info, _ = Individual.objects.get_or_create(
                 order=order,
-                surname=contact_data[contact_type]["surname"],
-                name=contact_data[contact_type]["name"],
-                patronymic=contact_data[contact_type]["patronymic"],
-                phone=contact_data[contact_type]["phone"],
+                surname=contact_data["individual"]["surname"],
+                name=contact_data["individual"]["name"],
+                patronymic=contact_data["individual"]["patronymic"],
+                phone=contact_data["individual"]["phone"],
             )
-            # if contact_type == "individual":
-            # elif contact_type == "legal_entity":
-            #     contact_info, _ = LegalEntity.objects.get_or_create(**contact_data[contact_type], order=order)
 
             # Добавление товаров в заказ и очистка корзины
             OrderItem.objects.bulk_create([

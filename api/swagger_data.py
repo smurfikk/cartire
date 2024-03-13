@@ -27,17 +27,6 @@ individual_properties = {
     'phone': openapi.Schema(type=openapi.TYPE_STRING, description="Телефон"),
 }
 
-# LegalEntity model fields
-legal_entity_properties = {
-    'surname': openapi.Schema(type=openapi.TYPE_STRING, description="Фамилия"),
-    'name': openapi.Schema(type=openapi.TYPE_STRING, description="Имя"),
-    'patronymic': openapi.Schema(type=openapi.TYPE_STRING, description="Отчество"),
-    'phone': openapi.Schema(type=openapi.TYPE_STRING, description="Телефон"),
-    'registration_number': openapi.Schema(type=openapi.TYPE_STRING, description="ЕГРПОУ"),
-    'legal_address': openapi.Schema(type=openapi.TYPE_STRING, description="Юридический адрес"),
-    'organization_name': openapi.Schema(type=openapi.TYPE_STRING, description="Наименование организации"),
-}
-
 # Address model fields
 address_properties = {
     'city': openapi.Schema(type=openapi.TYPE_STRING, description="Город"),
@@ -59,7 +48,6 @@ create_order_properties = {
             'type': openapi.Schema(type=openapi.TYPE_STRING, default="individual",
                                    description="Тип клиента: individual или legal_entity"),
             'individual': openapi.Schema(type=openapi.TYPE_OBJECT, properties=individual_properties),
-            'legal_entity': openapi.Schema(type=openapi.TYPE_OBJECT, properties=legal_entity_properties),
         },
         required=['type']
     ),
